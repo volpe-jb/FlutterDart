@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../mixins/validation_mixin.dart';
 
 class LoginScreen extends StatefulWidget {
   createState() {
@@ -6,14 +7,17 @@ class LoginScreen extends StatefulWidget {
   }
 }
 
-class LoginScreenState extends State<LoginScreen> {
-  final formKey = GlobalKey<FormState>();
+class LoginScreenState extends State<LoginScreen> with ValidationMixin {
+  final formKey = GlobalKey<FormState>();             // <<<<<<<<<<​​
+
+  String email = '';
+  String password = '';
 
   Widget build(context) {
     return Container(
       margin: EdgeInsets.all(20.0),
       child: Form( // pass key to widget
-        key: formKey,
+        key: formKey,                                // <<<<<<<<<<​​
         child: Column(
           children: [
             emailField(),
@@ -35,16 +39,9 @@ class LoginScreenState extends State<LoginScreen> {
         hintText: 'you@example.com',
       ),
       
-      validator: (String value) {  // function to the validator property
-        // return null if valid
-        // otherwise string (with error message) if invalid
-        if (!value.contains('@')) {
-          return 'Please enter a valid email';
-        }
-        return null;
-      },
-      onSaved: (String value) {
-        print(value);
+      validator: validateEmail,  // passing reference
+      onSaved: (String value) {                 
+        email = value;
       },
     );
   }
@@ -57,13 +54,9 @@ class LoginScreenState extends State<LoginScreen> {
         hintText: 'Password',
       ),
       
-      validator: (String value) {
-        if (value.length  < 4) {
-          return 'Password must be at least 4 characters';
-        }
-      },
+      validator: validatePassword,  // passing reference
       onSaved: (String value) {
-        print(value);
+        password = value;
       },
     );
   }
@@ -74,7 +67,9 @@ class LoginScreenState extends State<LoginScreen> {
       child: Text('Submit!'),
       onPressed: () {
         if (formKey.currentState.validate()) {
-        formKey.currentState.save();
+        formKey.currentState.save();           // <<<<<<<<<<​​
+        // take *both* email and password and pass to an API
+        print ('Time to post $email and $password to my API');
         }
       },
     );  
